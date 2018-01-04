@@ -70,11 +70,13 @@
         var arrivals_html = '<p></p>';
         _.each(buses, function (i) {
             var seconds = eastbound[i].timeToStation % 60;
-            var mins = (eastbound[i].timeToStation - seconds) / 60;
+            var mins = Math.floor(eastbound[i].timeToStation / 60);
+            var dot_number = Math.floor(seconds/10);
+
             if (i === 0) {
-                arrivals_html += '<h1 class="cover-heading">' + mins + ' mins ' + seconds + ' secs</h1>'
+                arrivals_html += '<h1 class="cover-heading">' + mins + ' mins</h1>'
             } else {
-                arrivals_html += '<p>' + mins + ' mins ' + seconds + ' secs</p>'
+                arrivals_html += '<p>' + mins + ' mins</p>'
             }
         });
 
@@ -86,11 +88,11 @@
         var arrivals_html = '<p></p>';
         _.each(buses, function (i) {
             var seconds = westbound[i].timeToStation % 60;
-            var mins = (westbound[i].timeToStation - seconds) / 60;
+            var mins = Math.floor(westbound[i].timeToStation / 60);
             if (i === 0) {
-                arrivals_html += '<h1 class="cover-heading">' + mins + ' mins ' + seconds + ' secs</h1>'
+                arrivals_html += '<h1 class="cover-heading">' + mins + ' mins</h1>'
             } else {
-                arrivals_html += '<p>' + mins + ' mins ' + seconds + ' secs</p>'
+                arrivals_html += '<p>' + mins + ' mins</p>'
             }
         });
 
