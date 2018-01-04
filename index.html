@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Blandford Close</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+            <div class="masthead clearfix">
+                <div class="inner">
+                    <h3 class="masthead-brand">Lyttelton Express</h3>
+                </div>
+            </div>
+
+            <div class="inner cover">
+                <p>Eastbound.</p>
+                <div id="eastbound"></div>
+                <p>Westbound.</p>
+                <div id="westbound"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="./js/jquery-3.2.1.min.js"></script>
+<!--<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/underscore-min.js"></script>
+<script>
+    var eastbound = [];
+    var westbound = [];
+
+    function display_eastbound() {
+        var buses = _.range(eastbound.length)
+
+        var arrivals_html = '<p></p>';
+        _.each(buses, function (i) {
+            var seconds = eastbound[i].timeToStation % 60;
+            var mins = (eastbound[i].timeToStation - seconds) / 60;
+            if (i === 0) {
+                arrivals_html += '<h1 class="cover-heading">' + mins + ' mins ' + seconds + ' secs</h1>'
+            } else {
+                arrivals_html += '<p>' + mins + ' mins ' + seconds + ' secs</p>'
+            }
+        });
+
+        $("#eastbound").html(arrivals_html)
+    }
+    function display_westbound() {
+        var buses = _.range(westbound.length)
+
+        var arrivals_html = '<p></p>';
+        _.each(buses, function (i) {
+            var seconds = westbound[i].timeToStation % 60;
+            var mins = (westbound[i].timeToStation - seconds) / 60;
+            if (i === 0) {
+                arrivals_html += '<h1 class="cover-heading">' + mins + ' mins ' + seconds + ' secs</h1>'
+            } else {
+                arrivals_html += '<p>' + mins + ' mins ' + seconds + ' secs</p>'
+            }
+        });
+
+        $("#westbound").html(arrivals_html)
+    }
+
+
+    function get_eastbound() {
+        $.ajax({
+            url: "https://api.tfl.gov.uk/StopPoint/490004093E/Arrivals?app_id=5d2044f1&app_key=139d73ce9b69816fdee5f69844654eb7",
+            success: function (result) {
+
+                eastbound = _.sortBy(result, function (bus) {
+                    return bus.timeToStation;
+                });
+                display_eastbound();
+            }
+        });
+    }
+
+    function get_westbound() {
+        $.ajax({
+            url: "https://api.tfl.gov.uk/StopPoint/490000067H/Arrivals?app_id=5d2044f1&app_key=139d73ce9b69816fdee5f69844654eb7",
+            success: function (result) {
+
+                westbound = _.sortBy(result, function (bus) {
+                    return bus.timeToStation;
+                });
+                display_westbound();
+            }
+        });
+    }
+
+    get_eastbound();
+    get_westbound();
+
+    window.setInterval(function() {
+        _.forEach(eastbound, function(bus) {
+            bus.timeToStation-=1;
+        });
+        _.forEach(westbound, function(bus) {
+            bus.timeToStation-=1;
+        });
+
+
+        if(eastbound.length > 0) {
+            next_bus = eastbound[0].timeToStation;
+            if(next_bus <= 0) {
+                get_eastbound();
+            } else if(next_bus % 5 ===0) {
+                display_eastbound()
+            }
+        }
+
+        if(westbound.length > 0) {
+            next_bus = westbound[0].timeToStation;
+            if(next_bus <= 0) {
+                get_westbound();
+            } else if(next_bus % 5 ===0) {
+                display_westbound()
+            }
+        }
+    }, 1000);
+</script>
+</body>
+</html>
