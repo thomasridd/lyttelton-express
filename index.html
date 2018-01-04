@@ -32,10 +32,13 @@
             </div>
 
             <div class="inner cover">
-                <p>Eastbound.</p>
+                <p>To the station.</p>
                 <div id="eastbound"></div>
-                <p>Westbound.</p>
+                <p>From the station.</p>
                 <div id="westbound"></div>
+                <div>
+                    <a id="update" href="#" class="btn btn-lg btn-secondary">Update</a>
+                </div>
             </div>
 
         </div>
@@ -55,6 +58,11 @@
 <script>
     var eastbound = [];
     var westbound = [];
+
+    $("#update").click(function() {
+        get_westbound();
+        get_eastbound();
+    });
 
     function display_eastbound() {
         var buses = _.range(eastbound.length)
